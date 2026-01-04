@@ -1,5 +1,6 @@
 import { SERVICES_PORTS } from '@app/common';
 import { NestFactory } from '@nestjs/core';
+import 'dotenv/config';
 import { AuthServiceModule } from './auth-service.module';
 
 async function bootstrap() {

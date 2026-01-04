@@ -6,6 +6,7 @@ import {
   Post,
   Request,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthServiceService } from './auth-service.service';
@@ -15,12 +16,12 @@ export class AuthServiceController {
   constructor(private readonly authServiceService: AuthServiceService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
+  register(@Body(new ValidationPipe()) dto: RegisterDto) {
     return this.authServiceService.register(dto.email, dto.password, dto.name);
   }
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  login(@Body(new ValidationPipe()) dto: LoginDto) {
     return this.authServiceService.login(dto.email, dto.password);
   }
 

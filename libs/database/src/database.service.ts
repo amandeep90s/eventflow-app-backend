@@ -9,9 +9,17 @@ export class DatabaseService implements OnModuleDestroy {
   public db: NodePgDatabase<typeof schema>;
 
   constructor() {
-    const connectionString: string = process.env.DATABASE_URL!;
+    // Remove schema parameter from connection string if present
+    let connectionString: string | undefined = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
+    connectionString = connectionString.replace('?schema=public', '');
 
     this.pool = new Pool({ connectionString });
+    // Initialize drizzle with the schema namespace
     this.db = drizzle(this.pool, { schema });
   }
 

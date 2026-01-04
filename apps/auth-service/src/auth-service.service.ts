@@ -22,7 +22,12 @@ export class AuthServiceService implements OnModuleInit {
 
   async onModuleInit() {
     // Connect to Kafka when the module is initialized
-    await this.kafkaClient.connect();
+    try {
+      await this.kafkaClient.connect();
+    } catch (error) {
+      console.error('Failed to connect to Kafka:', error);
+      // Continue even if Kafka fails - it's optional for register
+    }
   }
 
   async register(email: string, password: string, name: string) {
@@ -50,12 +55,17 @@ export class AuthServiceService implements OnModuleInit {
       })
       .returning();
 
-    // Emit user refistered event to Kafka
-    this.kafkaClient.emit(KAFKA_TOPICS.USER_REGISTERED, {
-      userId: user.id,
-      email: user.email,
-      timestamp: new Date().toISOString(),
-    });
+    // Emit user registered event to Kafka
+    try {
+      this.kafkaClient.emit(KAFKA_TOPICS.USER_REGISTERED, {
+        userId: user.id,
+        email: user.email,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Failed to emit USER_REGISTERED event to Kafka:', error);
+      // Continue - Kafka failure shouldn't block registration
+    }
 
     return {
       message: 'User registered successfully',
@@ -76,10 +86,15 @@ export class AuthServiceService implements OnModuleInit {
 
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
 
-    this.kafkaClient.emit(KAFKA_TOPICS.USER_LOGIN, {
-      userId: user.id,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      this.kafkaClient.emit(KAFKA_TOPICS.USER_LOGIN, {
+        userId: user.id,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Failed to emit USER_LOGIN event to Kafka:', error);
+      // Continue - Kafka failure shouldn't block login
+    }
 
     return {
       message: 'Login successful',
