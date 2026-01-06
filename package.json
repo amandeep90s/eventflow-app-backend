@@ -24,6 +24,7 @@
     "@nestjs/common": "^11.1.11",
     "@nestjs/core": "^11.1.11",
     "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/microservices": "^11.1.11",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.11",
